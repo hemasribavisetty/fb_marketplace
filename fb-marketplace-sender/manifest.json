@@ -1,0 +1,37 @@
+{
+  "manifest_version": 3,
+  "name": "FB Marketplace Message Sender",
+  "version": "1.0",
+  "description": "Paste and send messages from the FB Marketplace Web App to sellers on Facebook.",
+  "permissions": ["storage", "activeTab"],
+  "host_permissions": [
+    "https://www.facebook.com/*",
+    "https://www.messenger.com/*",
+    "http://localhost:5001/*",
+    "http://127.0.0.1:5001/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.facebook.com/*", "https://www.messenger.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "FB Marketplace Sender",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}

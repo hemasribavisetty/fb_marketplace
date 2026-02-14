@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { width: 280px; padding: 16px; font-family: -apple-system, sans-serif; margin: 0; }
+    h2 { font-size: 14px; margin: 0 0 12px 0; color: #1877f2; }
+    button { width: 100%; padding: 10px; background: #1877f2; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+    button:hover { background: #166fe5; }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+    .hint { font-size: 11px; color: #666; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h2>FB Marketplace Sender</h2>
+  <button id="findAndSend">Find & Send to 1 Seller</button>
+  <p class="hint">Generate a message in the web app first, then click above. It will open Marketplace, find a matching listing, and send automatically.</p>
+  <script src="popup.js"></script>
+</body>
+</html>
