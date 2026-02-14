@@ -1,0 +1,56 @@
+{
+    "manifest_version": 3,
+    "name": "FB Marketplace Helper",
+    "version": "2.0",
+    "description": "Automatically searches Facebook Marketplace in the background",
+  
+    "permissions": [
+      "tabs",
+      "scripting",
+      "storage"
+    ],
+  
+    "host_permissions": [
+      "https://www.facebook.com/*",
+      "https://www.messenger.com/*",
+      "https://generativelanguage.googleapis.com/*"
+    ],
+  
+    "background": {
+      "service_worker": "background.js"
+    },
+  
+    "content_scripts": [
+      {
+        "matches": [
+          "https://www.facebook.com/marketplace/*"
+        ],
+        "js": ["gemini.js", "content.js"],
+        "all_frames": true
+      },
+      {
+        "matches": [
+          "https://www.facebook.com/messages/*",
+          "https://www.facebook.com/*/messages/*"
+        ],
+        "js": ["gemini.js", "messenger.js"],
+        "all_frames": true
+      }
+    ],
+  
+    "action": {
+      "default_popup": "popup.html",
+      "default_icon": {
+        "16": "icon16.png",
+        "48": "icon48.png",
+        "128": "icon128.png"
+      }
+    },
+  
+    "icons": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  }
+  

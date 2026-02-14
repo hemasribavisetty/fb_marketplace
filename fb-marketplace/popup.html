@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      width: 300px;
+      padding: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      margin: 0;
+    }
+    h1 {
+      font-size: 18px;
+      margin: 0 0 15px 0;
+      color: #1877f2;
+    }
+    .status {
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      font-size: 14px;
+    }
+    .status.running {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .status.stopped {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    button.start {
+      background-color: #1877f2;
+      color: white;
+    }
+    button.start:hover {
+      background-color: #166fe5;
+    }
+    button.stop {
+      background-color: #dc3545;
+      color: white;
+    }
+    button.stop:hover {
+      background-color: #c82333;
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .info {
+      margin-top: 15px;
+      padding: 10px;
+      background-color: #f8f9fa;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #6c757d;
+    }
+  </style>
+</head>
+<body>
+  <h1>🚲 FB Marketplace Helper</h1>
+  
+  <div style="margin-bottom: 15px;">
+    <label for="searchInput" style="display: block; margin-bottom: 5px; font-size: 14px; font-weight: 600;">Search for:</label>
+    <input type="text" id="searchInput" placeholder="e.g., chair, bike, laptop" 
+           style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
+  </div>
+  
+  <div style="margin-bottom: 15px;">
+    <label style="display: block; margin-bottom: 5px; font-size: 14px; font-weight: 600;">Price Range:</label>
+    <div style="display: flex; gap: 10px;">
+      <div style="flex: 1;">
+        <input type="number" id="minPrice" placeholder="Min $" 
+               style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
+      </div>
+      <div style="flex: 1;">
+        <input type="number" id="maxPrice" placeholder="Max $" 
+               style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
+      </div>
+    </div>
+  </div>
+  
+  <div style="margin-bottom: 15px;">
+    <label for="maxMessages" style="display: block; margin-bottom: 5px; font-size: 14px; font-weight: 600;">Number of Messages to Send:</label>
+    <input type="number" id="maxMessages" placeholder="e.g., 3" min="1" max="20" value="3"
+           style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
+    <div style="margin-top: 5px; font-size: 11px; color: #6c757d;">
+      Will message this many sellers within budget (sorted by price, cheapest first)
+    </div>
+  </div>
+  
+  <div style="margin-bottom: 15px;">
+    <label for="geminiApiKey" style="display: block; margin-bottom: 5px; font-size: 14px; font-weight: 600;">Gemini API Key:</label>
+    <input type="password" id="geminiApiKey" placeholder="Enter your Gemini API key" 
+           style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
+    <div style="margin-top: 5px; font-size: 11px; color: #6c757d;">
+      Get your API key from <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: #1877f2;">Google AI Studio</a>
+    </div>
+  </div>
+  
+  <div style="margin-bottom: 15px;">
+    <label for="userPersona" style="display: block; margin-bottom: 5px; font-size: 14px; font-weight: 600;">Your Persona (Optional):</label>
+    <textarea id="userPersona" placeholder="e.g., I'm a student looking for affordable furniture. I'm friendly and polite." 
+              rows="2" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box; resize: vertical;"></textarea>
+    <div style="margin-top: 5px; font-size: 11px; color: #6c757d;">
+      Describe how you want the AI to communicate (tone, style, etc.)
+    </div>
+  </div>
+  
+  <div id="status" class="status stopped">
+    Status: Stopped
+  </div>
+  
+  <button id="startBtn" class="start">Start Background Search</button>
+  <button id="stopBtn" class="stop" style="display: none; margin-top: 10px;">Stop Search</button>
+  
+  <div class="info">
+    <strong>How it works:</strong><br>
+    • Uses Gemini AI for natural conversations<br>
+    • Generates contextual messages based on listings<br>
+    • Messages sellers within budget (sorted by price)<br>
+    • Automatically stops after your set number of messages<br>
+    • Auto-replies with relevant responses<br>
+    • Maintains conversation context<br>
+    • Works completely in the background
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
+
