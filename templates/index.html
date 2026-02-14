@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FB Marketplace Helper - Web App</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f1419;
+      --surface: #1a2332;
+      --surface-hover: #243044;
+      --accent: #1877f2;
+      --accent-hover: #166fe5;
+      --success: #31a24c;
+      --danger: #e74c3c;
+      --text: #e7e9ea;
+      --text-muted: #8b98a5;
+      --border: #2f3640;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'DM Sans', -apple-system, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .container {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin: 0 0 0.5rem 0;
+      color: var(--text);
+    }
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 2rem;
+    }
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      background: var(--surface);
+      padding: 0.25rem;
+      border-radius: 12px;
+    }
+    .tab {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab:hover { color: var(--text); background: var(--surface-hover); }
+    .tab.active { background: var(--accent); color: white; }
+    .panel { display: none; }
+    .panel.active { display: block; }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .card h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 0 0 1rem 0;
+      color: var(--text);
+    }
+    label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+    input, textarea {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+    }
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    textarea { min-height: 80px; resize: vertical; }
+    .row { display: flex; gap: 1rem; }
+    .row > * { flex: 1; }
+    .btn {
+      width: 100%;
+      padding: 0.875rem 1.25rem;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: var(--accent-hover); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-secondary {
+      background: var(--surface-hover);
+      margin-top: 0.5rem;
+    }
+    .btn-secondary:hover { background: var(--border); }
+    .output-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-top: 1rem;
+      font-size: 0.95rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+      min-height: 60px;
+    }
+    .output-box.filled { border-color: var(--success); }
+    .output-box.error { border-color: var(--danger); }
+    .hint {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: -0.5rem;
+      margin-bottom: 1rem;
+    }
+    .hint a { color: var(--accent); }
+    .quick-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.9rem;
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+      transition: background 0.2s;
+    }
+    .quick-link:hover { background: var(--surface-hover); }
+    .settings-section {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .settings-section:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚲 FB Marketplace Helper</h1>
+    <p class="subtitle">Generate AI-powered messages for sellers. Same brains as the extension, works anywhere.</p>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="initial">Initial Message</button>
+      <button class="tab" data-tab="reply">Reply to Seller</button>
+      <button class="tab" data-tab="settings">Settings</button>
+    </div>
+
+    <!-- Settings Panel -->
+    <div id="settings" class="panel">
+      <div class="card">
+        <h2>Settings</h2>
+        <div class="settings-section">
+          <label for="apiKey">Gemini API Key</label>
+          <input type="password" id="apiKey" placeholder="Enter your Gemini API key">
+          <p class="hint">Get your key from <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a>. Stored in browser only.</p>
+        </div>
+        <div class="settings-section">
+          <label for="persona">Your Persona (Optional)</label>
+          <textarea id="persona" placeholder="e.g., I'm a student looking for affordable furniture. I'm friendly and polite."></textarea>
+          <p class="hint">Describe how you want the AI to communicate.</p>
+        </div>
+        <div class="settings-section">
+          <label for="modelOverride">Model (Optional)</label>
+          <input type="text" id="modelOverride" placeholder="e.g., gemini-2.0-flash-exp — leave blank to auto-detect">
+          <p class="hint">If your API key says "model not found", click "Detect models" below to see what's available.</p>
+          <button class="btn btn-secondary" onclick="detectModels()" style="margin-top: 0.5rem;">Detect available models</button>
+          <div id="modelList" class="output-box" style="margin-top: 0.5rem; min-height: 40px; display: none;"></div>
+        </div>
+        <button class="btn" onclick="saveSettings()">Save Settings</button>
+      </div>
+    </div>
+
+    <!-- Initial Message Panel -->
+    <div id="initial" class="panel active">
+      <div class="card">
+        <h2>Generate Initial Message</h2>
+        <p class="hint">Enter listing details. Generate a message, then use "Find & Send" to automatically find a matching listing and message 1 seller.</p>
+        <label for="listingTitle">Listing Title</label>
+        <input type="text" id="listingTitle" placeholder="e.g., Vintage wooden chair - great condition" onblur="autoFillSearchKeyword()">
+        <label for="searchKeyword">Search Keyword (to find similar listings)</label>
+        <input type="text" id="searchKeyword" placeholder="e.g., wooden chair — used to search Marketplace">
+        <label for="listingPrice">Price / Max Price</label>
+        <input type="number" id="listingPrice" placeholder="e.g., 50 — max you'll pay (optional)">
+        <label for="listingDesc">Description (optional)</label>
+        <textarea id="listingDesc" placeholder="Paste the listing description here..."></textarea>
+        <button class="btn" id="btnInitial" onclick="generateInitialMessage()">Generate Message</button>
+        <div id="initialOutput" class="output-box">Your generated message will appear here.</div>
+        <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap;">
+          <button class="btn btn-secondary" onclick="copyOutput('initialOutput')">Copy</button>
+          <button class="btn" onclick="findAndSend('initialOutput')" style="background: var(--success);">Find & Send to 1 Seller</button>
+        </div>
+      </div>
+      <p class="hint">
+        <strong>Quick links:</strong><br>
+        <a href="https://www.facebook.com/marketplace" target="_blank" class="quick-link">📦 Open Marketplace</a>
+      </p>
+    </div>
+
+    <!-- Reply Panel -->
+    <div id="reply" class="panel">
+      <div class="card">
+        <h2>Generate Reply to Seller</h2>
+        <p class="hint">Paste the seller's message. Add conversation history for better context.</p>
+        <label for="sellerMessage">Seller's Message</label>
+        <textarea id="sellerMessage" placeholder="Paste what the seller said..."></textarea>
+        <label for="convHistory">Conversation History (optional, one per line: "Seller: ..." or "You: ...")</label>
+        <textarea id="convHistory" placeholder="You: Is this still available?\nSeller: Yes it is!"></textarea>
+        <label for="replyListingTitle">Original Listing (optional, for context)</label>
+        <input type="text" id="replyListingTitle" placeholder="e.g., Vintage wooden chair - $50">
+        <button class="btn" id="btnReply" onclick="generateReply()">Generate Reply</button>
+        <div id="replyOutput" class="output-box">Your generated reply will appear here.</div>
+        <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+          <button class="btn btn-secondary" onclick="copyOutput('replyOutput')">Copy to Clipboard</button>
+          <button class="btn btn-secondary" onclick="sendToExtension('replyOutput')">Send to Extension</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Tab switching
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.tab).classList.add('active');
+      });
+    });
+
+    function getApiKey() {
+      return document.getElementById('apiKey').value.trim() || localStorage.getItem('geminiApiKey') || '';
+    }
+    function getPersona() {
+      return document.getElementById('persona').value.trim() || localStorage.getItem('userPersona') || '';
+    }
+    function getModelOverride() {
+      return (document.getElementById('modelOverride')?.value.trim() || localStorage.getItem('geminiModel') || '').trim();
+    }
+
+    function loadSettings() {
+      const key = localStorage.getItem('geminiApiKey');
+      const persona = localStorage.getItem('userPersona');
+      const model = localStorage.getItem('geminiModel');
+      if (key) document.getElementById('apiKey').value = key;
+      if (persona) document.getElementById('persona').value = persona;
+      if (model && document.getElementById('modelOverride')) document.getElementById('modelOverride').value = model;
+    }
+    function saveSettings() {
+      localStorage.setItem('geminiApiKey', document.getElementById('apiKey').value.trim());
+      localStorage.setItem('userPersona', document.getElementById('persona').value.trim());
+      const mo = document.getElementById('modelOverride');
+      if (mo) localStorage.setItem('geminiModel', mo.value.trim());
+      alert('Settings saved!');
+    }
+
+    async function detectModels() {
+      const apiKey = getApiKey();
+      const out = document.getElementById('modelList');
+      if (!apiKey) {
+        out.textContent = 'Add your API key first.';
+        out.style.display = 'block';
+        out.classList.add('error');
+        return;
+      }
+      out.style.display = 'block';
+      out.classList.remove('filled', 'error');
+      out.textContent = 'Fetching...';
+      try {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(apiKey)}`);
+        const data = await res.json();
+        if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+        const models = (data.models || []).filter(m => {
+          const methods = m.supportedGenerationMethods || [];
+          return methods.includes('generateContent');
+        }).map(m => m.name.replace('models/', ''));
+        out.textContent = models.length ? 'Available: ' + models.join(', ') : 'No generateContent models found.';
+        out.classList.add(models.length ? 'filled' : 'error');
+      } catch (e) {
+        out.textContent = 'Error: ' + (e.message || String(e));
+        out.classList.add('error');
+      }
+    }
+    loadSettings();
+
+    async function callGemini(prompt, apiKey) {
+      const override = getModelOverride();
+      const modelSets = override
+        ? [{ base: 'v1beta', models: [override] }, { base: 'v1', models: [override] }]
+        : [
+            { base: 'v1', models: ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-pro'] },
+            { base: 'v1beta', models: ['gemini-2.0-flash-exp', 'gemini-2.0-flash', 'gemini-exp-1206', 'gemini-1.5-flash-8b', 'gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-pro'] }
+          ];
+      for (const { base, models } of modelSets) {
+        for (const model of models) {
+          try {
+            const res = await fetch(
+              `https://generativelanguage.googleapis.com/${base}/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`,
+              {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+              }
+            );
+            const data = await res.json();
+            if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
+              return data.candidates[0].content.parts[0].text.trim();
+            }
+            if (!res.ok && data.error?.message) throw new Error(data.error.message);
+          } catch (e) {
+            if (e.message && !e.message.includes('Failed to fetch')) throw e;
+          }
+        }
+      }
+      return null;
+    }
+
+    async function generateInitialMessage() {
+      const out = document.getElementById('initialOutput');
+      const btn = document.getElementById('btnInitial');
+      const apiKey = getApiKey();
+      if (!apiKey) {
+        out.textContent = 'Please add your Gemini API key in Settings first.';
+        out.classList.add('error');
+        return;
+      }
+      const persona = getPersona();
+      const title = document.getElementById('listingTitle').value.trim();
+      const price = document.getElementById('listingPrice').value ? parseFloat(document.getElementById('listingPrice').value) : null;
+      const desc = document.getElementById('listingDesc').value.trim();
+      const personaText = persona ? `\n\nYour communication style: ${persona}` : '';
+      const prompt = `You are helping someone message a seller on Facebook Marketplace. Generate a friendly, natural, and engaging first message to inquire about a listing.
+
+Listing Details:
+- Title: ${title || 'Not specified'}
+- Price: ${price ? '$' + price : 'Not specified'}
+- Description: ${desc || 'No description available'}
+
+Requirements:
+- Keep it short (1-2 sentences max)
+- Be friendly and polite
+- Show genuine interest
+- Ask if the item is still available
+- Sound natural, not robotic
+- Don't be too pushy or salesy${personaText}
+
+Generate ONLY the message text, nothing else:`;
+
+      out.classList.remove('filled', 'error');
+      out.textContent = 'Generating...';
+      btn.disabled = true;
+      try {
+        const result = await callGemini(prompt, apiKey);
+        if (result) {
+          out.textContent = result;
+          out.classList.add('filled');
+          storeMessageForExtension(result);
+        } else {
+          out.textContent = 'Failed to generate. Check your API key and try again.';
+          out.classList.add('error');
+        }
+      } catch (e) {
+        out.textContent = e.message || 'Error: ' + String(e);
+        out.classList.add('error');
+      }
+      btn.disabled = false;
+    }
+
+    async function storeMessageForExtension(text) {
+      try {
+        await fetch('/api/store-message', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: text }) });
+      } catch (_) {}
+    }
+
+    function autoFillSearchKeyword() {
+      const title = document.getElementById('listingTitle').value.trim();
+      const kw = document.getElementById('searchKeyword');
+      if (title && !kw.value.trim()) {
+        const words = title.replace(/[^\w\s]/g, '').split(/\s+/).filter(w => w.length > 1);
+        kw.value = words.slice(0, 3).join(' ') || title.split(/[-–—]/)[0].trim();
+      }
+    }
+
+    function sendToExtension(id) {
+      const el = document.getElementById(id);
+      const text = el?.textContent?.trim();
+      if (!text || text.startsWith('Your generated') || text.startsWith('Generating') || text.startsWith('Please')) {
+        alert('Generate a message first.');
+        return;
+      }
+      storeMessageForExtension(text).then(() => alert('Sent to extension! Go to Facebook, open the listing/message, and click the extension button.'));
+    }
+
+    async function findAndSend(id) {
+      const el = document.getElementById(id);
+      const text = el?.textContent?.trim();
+      if (!text || text.startsWith('Your generated') || text.startsWith('Generating') || text.startsWith('Please')) {
+        alert('Generate a message first.');
+        return;
+      }
+      const keyword = document.getElementById('searchKeyword').value.trim();
+      if (!keyword) {
+        alert('Enter a search keyword (e.g. "wooden chair") so we can find similar listings.');
+        return;
+      }
+      const maxPrice = document.getElementById('listingPrice').value ? parseFloat(document.getElementById('listingPrice').value) : null;
+      await fetch('/api/store-message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text, searchKeyword: keyword, maxPrice, minPrice: null })
+      });
+      window.open('https://www.facebook.com/marketplace/search/?query=' + encodeURIComponent(keyword), '_blank', 'noopener');
+    }
+
+    function parseConvHistory(text) {
+      if (!text.trim()) return [];
+      const lines = text.trim().split('\n');
+      return lines.map(line => {
+        const m = line.match(/^(Seller|You):\s*(.+)$/i);
+        if (m) return { role: m[1].toLowerCase() === 'you' ? 'user' : 'seller', text: m[2].trim() };
+        return { role: 'seller', text: line.trim() };
+      }).filter(x => x.text);
+    }
+
+    async function generateReply() {
+      const out = document.getElementById('replyOutput');
+      const btn = document.getElementById('btnReply');
+      const apiKey = getApiKey();
+      if (!apiKey) {
+        out.textContent = 'Please add your Gemini API key in Settings first.';
+        out.classList.add('error');
+        return;
+      }
+      const sellerMsg = document.getElementById('sellerMessage').value.trim();
+      if (!sellerMsg) {
+        out.textContent = 'Please paste the seller\'s message.';
+        out.classList.add('error');
+        return;
+      }
+      const history = parseConvHistory(document.getElementById('convHistory').value);
+      const listingTitle = document.getElementById('replyListingTitle').value.trim();
+      const persona = getPersona();
+      const historyText = history.length ? '\n\nPrevious conversation:\n' + history.map(m => `${m.role}: ${m.text}`).join('\n') : '';
+      const listingText = listingTitle ? `\n\nOriginal listing: ${listingTitle}` : '';
+      const personaText = persona ? `\n\nYour communication style: ${persona}` : '';
+      const prompt = `You are helping someone respond to a seller on Facebook Marketplace. The seller just sent this message:
+
+Seller: "${sellerMsg}"${historyText}${listingText}
+
+Requirements:
+- Respond naturally and contextually to what the seller said
+- Be friendly and polite
+- Keep it concise (1-3 sentences)
+- If they asked a question, answer it
+- If they're confirming availability, express interest
+- If they're negotiating, be reasonable
+- Sound like a real person, not a bot${personaText}
+
+Generate ONLY the reply message text, nothing else:`;
+
+      out.classList.remove('filled', 'error');
+      out.textContent = 'Generating...';
+      btn.disabled = true;
+      try {
+        const result = await callGemini(prompt, apiKey);
+        if (result) {
+          out.textContent = result;
+          out.classList.add('filled');
+          storeMessageForExtension(result);
+        } else {
+          out.textContent = 'Failed to generate. Check your API key and try again.';
+          out.classList.add('error');
+        }
+      } catch (e) {
+        out.textContent = e.message || 'Error: ' + String(e);
+        out.classList.add('error');
+      }
+      btn.disabled = false;
+    }
+
+    function copyOutput(id) {
+      const el = document.getElementById(id);
+      const text = el.textContent;
+      if (!text || text.startsWith('Your generated') || text.startsWith('Generating') || text.startsWith('Please')) return;
+      navigator.clipboard.writeText(text).then(() => alert('Copied to clipboard!'));
+    }
+  </script>
+</body>
+</html>
